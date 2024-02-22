@@ -1,36 +1,62 @@
-import React, { useState } from "react";
-import {useFormik} from "formik";
+import React, { useState,useEffect } from "react";
+import { useFormik } from "formik";
 import { signupSchema } from "../Schema";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import {NotificationContainer, NotificationManager} from 'react-notifications';
+
 
 function Register() {
-  const [pass,setpass]=useState(false);
-  const [pass2,setpass2]=useState(false);
-  const initialValues={
-    fname:"",
-    lname:"",
-    email:"",
-    uname:"",
-    password:"",
-    cpassword:""
+  useEffect(() => {
+    // Set document title when the component mounts
+    document.title = "Register";
+  }, []);
+  const [pass, setPass] = useState(false);
+  const [pass2, setPass2] = useState(false);
+  const initialValues = {
+    fname: "",
+    lname: "",
+    email: "",
+    uname: "",    
+    password: "",
+    cpassword: ""
   };
-  // const Register=()=>{
-    const {values,errors,touched,handleBlur,handleChange,handleSubmit}=useFormik({
-      initialValues:initialValues,
-      validationSchema:signupSchema,
-      onSubmit:(values,action)=>{
-        console.log(values)
-        action.resetForm()
-      }
-    })
+  const navigate=useNavigate();
+  const onSubmitForm = async (values, action) => {
+    try {
+      // Send form data to backend
+      const response = await axios.post('http://localhost:8081/register', values);
+      console.log(response.data); // Log response from backend
+      action.resetForm();
+      NotificationManager.success("Form submitted successfully!");
+      navigate('/login');
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      NotificationManager.error("Form submitted not successfully!");
+    }
+  };
+
+  const formik = useFormik({
+    initialValues: initialValues,
+    validationSchema: signupSchema,
+    onSubmit: onSubmitForm // Pass onSubmitForm directly
+  });
+  // let showNotification=()=>{
+  //   NotificationManager.error("form not submited suessfully!")
+  // }
+
+  const { values, errors, touched, handleChange, handleBlur } = formik; // Destructure values, errors, touched, handleChange, and handleBlur from formik
+    
   // }
   return (
     <div className="col-sm-5 container-fluid mt-4">
       {/*fname,lanem,email,username ,password, confirm password,btn-register and login */}
       <div className="container">
+      
         <h5 className="text-center">Registration Form</h5>
 
-        <form action=""  onSubmit={handleSubmit}>
+        <form onSubmit={formik.handleSubmit}>
+
           <div className="mb-3">
             <label htmlFor="fname" className="form-label"><i className="bi bi-person" />First Name<span style={{color:"red"}}>*</span></label>
             <input
@@ -39,7 +65,6 @@ function Register() {
               id="fname"
               autoComplete="username"
               placeholder="enter your first name" className="form-control"
-              
               value={values.fname}
               onChange={handleChange}
               onBlur={handleBlur}
@@ -106,7 +131,7 @@ function Register() {
               onBlur={handleBlur}
             />
             {errors.password && touched.password ? <p className="form-error text-danger">{errors.password}</p> : null}
-            <p className="btn btn-outline-secondary" onClick={()=>setpass(!pass)}>{(pass) ? <i className="bi bi-eye-slash"></i>  : <i className="bi bi-eye"></i>}</p>
+            <p className="btn btn-outline-secondary" onClick={()=>setPass(!pass)}>{(pass) ? <i className="bi bi-eye-slash"></i>  : <i className="bi bi-eye"></i>}</p>
 
           </div>
 
@@ -123,12 +148,13 @@ function Register() {
               onBlur={handleBlur}
             />
             {errors.cpassword && touched.cpassword ? <p className="form-error text-danger">{errors.cpassword}</p> : null}
-            <p className="btn btn-outline-secondary" onClick={()=>setpass2(!pass2)}>{(pass2) ? <i className="bi bi-eye-slash"></i>  : <i className="bi bi-eye"></i>}</p>
+            <p className="btn btn-outline-secondary" onClick={()=>setPass2(!pass2)}>{(pass2) ? <i className="bi bi-eye-slash"></i>  : <i className="bi bi-eye"></i>}</p>
 
 
           </div>  
           <div className="mb-3 ">
-            <button type="submit" className="text-white bg-primary">Submit</button>
+          <NotificationContainer />
+            <button type="submit"  className="text-white bg-primary">Submit</button>
             <p>Have an ACcount ? <Link to="/login">Login</Link></p>
           </div>
           

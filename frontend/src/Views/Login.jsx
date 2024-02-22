@@ -1,6 +1,10 @@
-import React from 'react';
+import React,{useEffect} from 'react';
 
 const Login = () => {
+  useEffect(() => {
+    // Set document title when the component mounts
+    document.title = "Login";
+  }, []);
   return (
     <div className='container-fluid d-flex justify-content-center align-items-center'>
       <div className='col-sm-6'>
