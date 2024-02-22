@@ -39,6 +39,24 @@ app.post('/register', (req, res) => {
   });
 });
 
+// login
+app.post('/login',(req,res)=>{
+  const values=[req.body.email,req.body.password];
+  const query="select * from signup where email=? and password=?";
+  db.query(query,values,(err,data)=>{
+    if(err){
+      console.error("error creating user",err);
+      return res.status(500).json({error:"internal server error"});
+    }else{
+      if(data.length > 0){
+        res.json({message:'login successful!',redirectTo:'/dashboard'});
+      }else{
+        res.status(401).json({error:"invalid email or password!"})
+      }
+    }
+  })
+});
+
 // Start the Express server and listen on port 8081
 app.listen(8081, () => {
   console.log("Server is listening on port 8081");

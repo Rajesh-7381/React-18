@@ -3,6 +3,7 @@ import { BrowserRouter , Routes, Route } from 'react-router-dom';
 import 'react-notifications/lib/notifications.css';
 import Register from './Views/Register';
 import Login from './Views/Login';
+import DashBoard from './Views/DashBoard';
 
 const App = () => {
   return (
@@ -11,6 +12,7 @@ const App = () => {
         <Routes>
           <Route path='/' element={<Register />} />
           <Route path='/login' element={<Login />} />
+          <Route path='/dashboard' element={<DashBoard />} />
           
         </Routes>
       </BrowserRouter>
