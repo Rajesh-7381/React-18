@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { Link } from "react-router-dom";
 import React, { useEffect, useState } from 'react';
+import Swal from 'sweetalert2';
 
 const DashBoard = () => {
   useEffect(() => {
@@ -18,7 +19,38 @@ const DashBoard = () => {
         console.log(err);
       });
   }, []);
-
+  
+  // Inside the component
+  const deletedata = async (id) => {
+    try {
+      const response = await axios.delete(`http://localhost:8081/deletedata/${id}`);
+      if (response.status === 200) {
+        Swal.fire({
+          title: "Are you sure?",
+          text: "You won't be able to revert this!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+          // Check if the user clicked "Yes, delete it!"
+          if (result.isConfirmed) {
+            // If confirmed, delete the data
+            Swal.fire({
+              title: "Deleted!",
+              text: "Your file has been deleted.",
+              icon: "success"
+            });
+            setData(prevData => prevData.filter(item => item.id !== id));
+          }
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  
   return (
     <div className="container-fluid">
     <div className=''>
@@ -64,9 +96,9 @@ const DashBoard = () => {
                   <td>{row.uname}</td>
                   <td>{row.email}</td>
                   <td>
-                    <button className='btn btn-block bg-success '><Link><i className='bi bi-pen'></i></Link></button>
+                    <button className='btn btn-block bg-success '><Link><i  className='bi bi-pen'></i></Link></button>
                     <button className='btn btn-block bg-warning '><Link><i className='bi bi-eye'></i></Link></button>
-                    <button className='btn btn-block bg-danger '><Link><i className='bi bi-trash'></i></Link></button>
+                    <button onClick={()=>deletedata(row.id)} className='btn btn-block bg-danger '><Link><i className='bi bi-trash'></i></Link></button>
                   </td>
                 </tr>
               ))}

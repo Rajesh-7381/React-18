@@ -59,7 +59,8 @@ app.post('/login',(req,res)=>{
       return res.status(500).json({error:"internal server error"});
     }else{
       if(data.length > 0){
-        res.json({message:'login successful!',redirectTo:'/dashboard'});
+        // res.json({message:'login successful!',redirectTo:'/dashboard'});
+        res.json({message:'login successful!'});
       }else{
         res.status(401).json({error:"invalid email or password!"})
       }
@@ -69,7 +70,7 @@ app.post('/login',(req,res)=>{
 
 // getdata
 app.get('/userdata', (req, res) => {
-  const query = "SELECT * FROM signup order by fname";
+  const query = "SELECT * FROM signup ";
   db.query(query, (err, data) => {
     if (err) {
       return res.json({ message: "Internal Server Error" });
@@ -77,6 +78,19 @@ app.get('/userdata', (req, res) => {
     return res.json(data);
   });
 });
+
+// delete data
+app.delete('/deletedata/:id',(req,res)=>{
+  const id=req.params.id;
+  const query="delete from signup where id=?";
+  db.query(query,id,(err,data)=>{
+    if(err){
+      console.error("Error deleting user:", err);
+    }else{
+      return res.status(200).json({ message: "User deleted successfully!" });
+    }
+  })
+})
 
 
 // Start the Express server and listen on port 8081

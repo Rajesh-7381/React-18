@@ -27,7 +27,7 @@ const Login = () => {
         throw new Error(data.error);
       }
 
-      NotificationManager.success("Login successful!");
+      // NotificationManager.success("Login successful!");
       navigate("/dashboard");
     } catch (err) {
       NotificationManager.error("Invalid email or password!");
