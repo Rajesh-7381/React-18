@@ -13,13 +13,23 @@ app.use(cors());
 app.use(express.json());
 
 // Create a connection to the MySQL database
-const db = mysql.createConnection({
+// createpool coonect with multiple databse ,it does not create new connection
+const db = mysql.createPool({
+// const db = mysql.createConnection({
   host: "localhost",
   user: "root",
   port: "3307",
   password: "1234",
   database: "amirpet"
 });
+
+// db.connect(err=>{
+//   if(err){
+//     console.error("not connected",err);
+//     return;
+//   }
+//   console.log('Connected to MySQL database');  
+// })
 
 // Define route to handle form data submission
 app.post('/register', (req, res) => {
@@ -56,6 +66,18 @@ app.post('/login',(req,res)=>{
     }
   })
 });
+
+// getdata
+app.get('/userdata', (req, res) => {
+  const query = "SELECT * FROM signup order by fname";
+  db.query(query, (err, data) => {
+    if (err) {
+      return res.json({ message: "Internal Server Error" });
+    }
+    return res.json(data);
+  });
+});
+
 
 // Start the Express server and listen on port 8081
 app.listen(8081, () => {
