@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { NotificationContainer, NotificationManager } from 'react-notifications';
+import { Link } from "react-router-dom";
 
 const Login = () => {
   useEffect(()=>{
@@ -27,6 +28,9 @@ const Login = () => {
         throw new Error(data.error);
       }
 
+      const {token}=await response.json();
+      // console.log(token)
+      localStorage.setItem('token',token)
       // NotificationManager.success("Login successful!");
       navigate("/dashboard");
     } catch (err) {
@@ -77,6 +81,12 @@ const Login = () => {
                 </button>
               </div>
             </form>
+            <div>
+              <Link to="/forgot">Forgot Password?</Link>
+            </div>
+            <div>
+            <p>Dont't Have an ACcount ? <Link to="/">Register</Link></p>
+            </div>
             <div className="text-center my-3">
               <span>OR</span>
             </div>

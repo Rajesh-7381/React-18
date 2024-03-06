@@ -48,4 +48,6 @@ install bootstarp icons ->npm install bootstrap-icons
         ->inside backend to run comand(npm init -y)->to install package.json
         ->inside backend to run command(npm i mysql express nodemon cors)
         ->if mysql not worked to expicitly instal(npm install mysql2)
+        ->npm install nodemailer
+        ->npm install cookie-parser jsonwebtoken (and some changes in frontend login.jsx and server.js('/login'))
         

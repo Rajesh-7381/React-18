@@ -10,6 +10,7 @@ const DashBoard = () => {
 
   const [Data, setData] = useState([]);
 
+
   useEffect(() => {
     axios.get('http://localhost:8081/userdata')
       .then(res => {
@@ -25,7 +26,7 @@ const DashBoard = () => {
     try {
       const response = await axios.delete(`http://localhost:8081/deletedata/${id}`);
       if (response.status === 200) {
-        Swal.fire({
+        const result = await Swal.fire({
           title: "Are you sure?",
           text: "You won't be able to revert this!",
           icon: "warning",
@@ -33,23 +34,43 @@ const DashBoard = () => {
           confirmButtonColor: "#3085d6",
           cancelButtonColor: "#d33",
           confirmButtonText: "Yes, delete it!"
-        }).then((result) => {
-          // Check if the user clicked "Yes, delete it!"
-          if (result.isConfirmed) {
-            // If confirmed, delete the data
-            Swal.fire({
-              title: "Deleted!",
-              text: "Your file has been deleted.",
-              icon: "success"
-            });
-            setData(prevData => prevData.filter(item => item.id !== id));
-          }
         });
+  
+        // Check if the user clicked "Yes, delete it!"
+        if (result.isConfirmed) {
+          // If confirmed, delete the data
+          await axios.delete(`http://localhost:8081/deletedata/${id}`);
+          setData(prevData => prevData.filter(item => item.id !== id));
+          Swal.fire({
+            title: "Deleted!",
+            text: "Your file has been deleted.",
+            icon: "success"
+          });
+        }
       }
     } catch (error) {
       console.log(error);
+      Swal.fire({
+        title: "Error!",
+        text: "An error occurred while deleting the data.",
+        icon: "error"
+      });
     }
   }
+  
+  const [userData, setUserData] = useState(null);  
+  const fetchUserData = async (id) => {
+    try {
+      const response = await axios.get(`http://localhost:8081/induserdata/${id}`);
+      if (response.status === 201) {
+        setUserData(response.data[0]);
+      } else {
+        console.log('Failed to fetch user data');
+      }
+    } catch (error) {
+      console.error('An error occurred while fetching user data:', error);
+    }
+  };
   
   return (
     <div className="container-fluid">
@@ -62,7 +83,7 @@ const DashBoard = () => {
                 <Link className='nav-link'>a</Link>
               </li>
               <li className='nav-item'>
-                <Link className='nav-link'>a</Link>
+                <Link className='nav-link'><Link to="/login">Login</Link></Link>
               </li>
               <li className='nav-item'>
                 <Link className='nav-link'></Link>
@@ -96,9 +117,9 @@ const DashBoard = () => {
                   <td>{row.uname}</td>
                   <td>{row.email}</td>
                   <td>
-                    <button className='btn btn-block bg-success '><Link><i  className='bi bi-pen'></i></Link></button>
-                    <button className='btn btn-block bg-warning '><Link><i className='bi bi-eye'></i></Link></button>
-                    <button onClick={()=>deletedata(row.id)} className='btn btn-block bg-danger '><Link><i className='bi bi-trash'></i></Link></button>
+                    <button onClick={()=>editform(row.id)} className='btn btn-block bg-success '><Link to="/update"><i  className='bi bi-pen '></i></Link></button>
+                    <button onClick={() => fetchUserData(row.id)} className='btn btn-block bg-success'><i className='bi bi-eye'></i></button>
+                    <button onClick={()=>deletedata(row.id)} className='btn btn-block bg-danger'><Link><i className='bi bi-trash'></i></Link></button>
                   </td>
                 </tr>
               ))}
@@ -113,11 +134,37 @@ const DashBoard = () => {
             <ul className="list-group">
               <li className="list-group-item"><Link to="/dashboard">Dashboard</Link></li>
               <li className="list-group-item"><Link to="/profile">Profile</Link></li>
+              <li className="list-group-item"><Link to="/todo">Todo</Link></li>
               {/* Add more sidebar links as needed */}
             </ul>
           </div>
         </div>
       </div>
+      {userData && (
+        <div className="modal" tabIndex="-1" role="dialog" style={{ display: 'block', justifyContent: 'center', alignItems: 'center', marginTop: '10%' }}>
+          <div className="modal-dialog" role="document">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">User Details</h5>
+                <button type="button" className="close" style={{color:"white",backgroundColor:"red"}} data-dismiss="modal" aria-label="Close" onClick={() => setUserData(null)}>
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div className="modal-body">
+                {/* Display user data here */}
+                <p>ID: {userData.id}</p>
+                <p>First Name: {userData.fname}</p>
+                <p>Last Name: {userData.lname}</p>
+                <p>User Name: {userData.uname}</p>
+                <p>Email : {userData.email}</p>
+              
+                {/* Add other user data as needed */}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
     </div>
   )
 }
